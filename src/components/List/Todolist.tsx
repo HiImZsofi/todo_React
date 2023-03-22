@@ -51,7 +51,7 @@ const TodoList: FC<Props> = ({
       >
         {todo.completed ? (
           <span style={{ textDecorationLine: "line-through" }}>
-            {todo.todo}
+            {todo.name}
           </span>
         ) : editing ? (
           <form method="GET" onSubmit={() => changeTodo(inputValue, todo.id)}>
@@ -62,7 +62,7 @@ const TodoList: FC<Props> = ({
             ></input>
           </form>
         ) : (
-          todo.todo
+          todo.name
         )}
       </h1>
       {todo.completed ? (

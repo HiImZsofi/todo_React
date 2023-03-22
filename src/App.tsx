@@ -17,10 +17,26 @@ const App: FC = () => {
     }
     const data: Todos = {
       id: todoList.length < 1 ? 1 : todoList[todoList.length - 1].id + 1, //mindig az utolsó id legyen
-      todo: todo,
+      name: todo,
       completed: false,
     };
     setTodoList([...todoList, data]);
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: data.id,
+        name: data.name,
+        completed: false
+      }),
+    };
+    fetch("http://localhost:3000/todos/create", requestOptions)
+        .then(async (response) => {
+          const isJson = response.headers
+              .get("content-type")
+              ?.includes("application/json");
+          const data = isJson && (await response.json());
+        })
   };
 
   const completeTodo = (id: number): void => {
@@ -36,16 +52,31 @@ const App: FC = () => {
 
   const changeTodo = (input: string, id: number) => {
     setTodoList(
-      todoList.map((item) => (item.id === id ? { ...item, todo: input } : item))
+      todoList.map((item) => (item.id === id ? { ...item, name: input } : item))
     );
   };
 
   const deleteTodo = (id: number): void => {
     setTodoList(
       todoList.filter(
-        (todo: Todos): Todos | null => (todo.id !== id ? todo : null) //nem tudom az előzőben hol volt a hiba
+        (todo: Todos): Todos | null => (todo.id !== id ? todo : null)
       )
+
     );
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: id
+      }),
+    };
+    fetch("http://localhost:3000/todos/delete", requestOptions)
+        .then(async (response) => {
+          const isJson = response.headers
+              .get("content-type")
+              ?.includes("application/json");
+          const data = isJson && (await response.json());
+        })
   };
 
   const toggleTheme = () => {
