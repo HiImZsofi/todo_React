@@ -1,53 +1,53 @@
 import React, { FC, useEffect, useState } from "react";
 import { Todos } from "./Interface";
-
+import axios from 'axios';
 import TodoForm from "./components/Form/Todoform";
 
 import "./App.css";
 import TodoList from "./components/List/Todolist";
+// import {Todo} from "../todo_backend/src/todo/todo.entity";
+// import {Todo} from "../todo_backend/src/todo/todo.entity";
 
 const App: FC = () => {
   const [todoList, setTodoList] = useState<Todos[]>([]);
   const [theme, setTheme] = useState("light");
 
-  const addTodo = (todo: string): void => {
+  async function getData() {
+    const response =  await axios.get('http://localhost:3000/todos/get');
+    const todos: Todos[] = await response.data;
+    setTodoList(todos)
+  }
+
+  useEffect( () => {
+    getData();
+  })
+  const addTodo = async (todo: string): Promise<void> => {
     if (!todo) {
       alert("Input field is empty");
       return;
     }
     const data: Todos = {
-      id: todoList.length < 1 ? 1 : todoList[todoList.length - 1].id + 1, //mindig az utolsó id legyen
-      name: todo,
+      id: todoList.length < 1 ? 1 : todoList[todoList.length - 1].id + 1,
+      title: todo,
       completed: false,
     };
-    setTodoList([...todoList, data]);
-    const requestOptions = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        id: data.id,
-        name: data.name,
-        completed: false
-      }),
-    };
-    fetch("http://localhost:3000/todos/create", requestOptions)
-        .then(async (response) => {
-          const isJson = response.headers
-              .get("content-type")
-              ?.includes("application/json");
-          const data = isJson && (await response.json());
-        })
+await axios.post('http://localhost:3000/todos/create', {
+  title: data.title,
+  completed: false
+})
+    await getData()
   };
 
   const completeTodo = (id: number): void => {
     setTodoList(
-      todoList.map(
-        (todo: Todos): Todos =>
-          todo.id === id
-            ? Object.assign(todo, { completed: true }) && todo
-            : todo
-      )
+        todoList.map(
+            (todo: Todos): Todos =>
+                todo.id === id
+                    ? Object.assign(todo, { completed: true }) && todo
+                    : todo
+        )
     );
+    axios.put(`http://localhost:3000/todos/modify/${id}`, {completed: todoList[id].completed})
   };
 
   const changeTodo = (input: string, id: number) => {
@@ -58,26 +58,12 @@ const App: FC = () => {
 
   const deleteTodo = (id: number): void => {
     setTodoList(
-      todoList.filter(
-        (todo: Todos): Todos | null => (todo.id !== id ? todo : null)
-      )
-
+        todoList.filter(
+            (todo: Todos): Todos | null => (todo.id !== id ? todo : null)
+        )
     );
-    const requestOptions = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        id: id
-      }),
-    };
-    fetch("http://localhost:3000/todos/delete", requestOptions)
-        .then(async (response) => {
-          const isJson = response.headers
-              .get("content-type")
-              ?.includes("application/json");
-          const data = isJson && (await response.json());
-        })
-  };
+    axios.delete('http://localhost:3000/todos/delete/' + id)
+  }
 
   const toggleTheme = () => {
     if (theme === "light") {
