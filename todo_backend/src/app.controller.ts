@@ -6,11 +6,11 @@ import {Todo} from "./todo/todo.entity";
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get('/todos/get')
+  @Get('/todos')
   getAll(): Promise<Todo[]> {
     return this.appService.findAll();
   }
-  @Get('/todos/get/:id')
+  @Get('/todos/:id')
   getOne(@Param('id') id:string): Promise<Todo> {
     return this.appService.findOne(Number(id));
   }
@@ -25,9 +25,9 @@ export class AppController {
     return this.appService.remove(Number(id));
   }
 
-  @Put('/todos/modify/:id')
-  modifyOne(@Param('id') id: string, @Body() todo: Todo){
-    return this.appService.modify(Number(id), todo)
+  @Put('/todos/modify')
+  modifyOne(@Body() todo: Todo){
+    return this.appService.modify(todo.id, todo)
   }
 }
 

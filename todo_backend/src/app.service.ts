@@ -14,7 +14,7 @@ export class AppService {
     return this.todoRepository.find();
   }
 
-  async create (todo: Todo): Promise<void> {
+  async create(todo: { completed: boolean; title: string }): Promise<void> {
     await this.todoRepository.save(todo);
   }
 
