@@ -13,14 +13,15 @@ const App: FC = () => {
   const [theme, setTheme] = useState("light");
 
   async function getData() {
-    const response =  await axios.get('http://localhost:3000/todos/get');
+    const response =  await axios.get('http://localhost:3000/todos');
     const todos: Todos[] = await response.data;
     setTodoList(todos)
   }
 
   useEffect( () => {
     getData();
-  })
+  },[])
+
   const addTodo = async (todo: string): Promise<void> => {
     if (!todo) {
       alert("Input field is empty");
@@ -39,21 +40,22 @@ await axios.post('http://localhost:3000/todos/create', {
   };
 
   const completeTodo = (id: number): void => {
-    setTodoList(
-        todoList.map(
-            (todo: Todos): Todos =>
-                todo.id === id
-                    ? Object.assign(todo, { completed: true }) && todo
-                    : todo
-        )
-    );
-    axios.put(`http://localhost:3000/todos/modify/${id}`, {completed: todoList[id].completed})
+    // setTodoList(
+    //     todoList.map(
+    //         (todo: Todos): Todos =>
+    //             todo.id === id
+    //                 ? Object.assign(todo, { completed: true }) && todo
+    //                 : todo
+    //     )
+    // );
+    axios.put(`http://localhost:3000/todos/modify/${id}`, {completed: !todoList[id].completed}).then(getData)
   };
 
-  const changeTodo = (input: string, id: number) => {
+  const changeTodo = async (input: string, id: number) =>{
     setTodoList(
       todoList.map((item) => (item.id === id ? { ...item, name: input } : item))
     );
+    await axios.put(`http://localhost:3000/todos/modify`, {todo: todoList[id]})
   };
 
   const deleteTodo = (id: number): void => {
@@ -89,9 +91,9 @@ await axios.post('http://localhost:3000/todos/create', {
         <div className="container">
           <TodoForm addTodo={addTodo} />
           <div className="todoList">
-            {todoList.map((todo: Todos, key: number) => (
+            {todoList.map((todo: Todos) => (
               <TodoList
-                key={key}
+                  key={todo.id}
                 todo={todo}
                 completeTodo={completeTodo}
                 deleteTodo={deleteTodo}

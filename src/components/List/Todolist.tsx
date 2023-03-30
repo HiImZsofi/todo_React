@@ -12,7 +12,6 @@ interface Props {
 
 const TodoList: FC<Props> = ({
   todo,
-  key,
   completeTodo,
   deleteTodo,
   changeTodo,
@@ -39,7 +38,7 @@ const TodoList: FC<Props> = ({
   };
 
   return (
-    <div key={key} className="todo">
+    <div className="todo">
       <button type="button" onClick={handleEditing}>
         Edit
       </button>
