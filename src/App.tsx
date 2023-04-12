@@ -32,10 +32,10 @@ const App: FC = () => {
       title: todo,
       completed: false,
     };
-await axios.post('http://localhost:3000/todos/create', {
-  title: data.title,
-  completed: false
-})
+    await axios.post('http://localhost:3000/todos/create', {
+      title: data.title,
+      completed: false
+    })
     await getData()
   };
 
@@ -48,14 +48,14 @@ await axios.post('http://localhost:3000/todos/create', {
     //                 : todo
     //     )
     // );
-    axios.put(`http://localhost:3000/todos/modify/${id}`, {completed: !todoList[id].completed}).then(getData)
+    //axios.put(`http://localhost:3000/todos/modify/${id}`, {completed: !todoList.find(this.id)}).then(getData)
   };
 
   const changeTodo = async (input: string, id: number) =>{
     setTodoList(
       todoList.map((item) => (item.id === id ? { ...item, name: input } : item))
     );
-    await axios.put(`http://localhost:3000/todos/modify`, {todo: todoList[id]})
+    await axios.put(`http://localhost:3000/todos/modify`, {id, title: input})
   };
 
   const deleteTodo = (id: number): void => {

@@ -53,7 +53,10 @@ const TodoList: FC<Props> = ({
             {todo.title}
           </span>
         ) : editing ? (
-          <form method="GET" onSubmit={() => changeTodo(inputValue, todo.id)}>
+          <form method="GET" onSubmit={(e) => {
+            e.preventDefault();
+            changeTodo(inputValue, todo.id);
+          }}>
             <input
               placeholder="Editing current item"
               value={inputValue}
